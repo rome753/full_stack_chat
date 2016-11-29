@@ -1,0 +1,89 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script type='text/javascript' src="../static/js/jquery-3.1.1.js"></script>
+<script type='text/javascript' src="../static/js/bootstrap.js"></script>
+<link type="text/css" href="../static/css/bootstrap.css" rel="stylesheet"/> 
+<script>
+
+
+$(document).ready(function(){
+
+var key = '4bf6dd284529e5f0a10ac4458c4e22b5';
+
+var search = function(){
+	var city = $('#city').val();
+	console.log(city);
+	
+	var url = 'http://v.juhe.cn/weather/index?callback=?';
+	$.getJSON(url, {
+		'cityname':city,
+		'dtype':'jsonp',
+		'key':key
+	},function(data){
+		console.log(data);
+		if(data.resultcode != 200) {
+		$('li')[0].innerHTML = '无数据';
+		$('li')[1].innerHTML = '无数据';
+		$('li')[2].innerHTML = '无数据';
+		return;
+		}
+		var temp = data.result.today.temperature;
+		$('li')[0].innerHTML = '温度：'+temp;
+
+		var weather = data.result.today.weather;
+		$('li')[1].innerHTML = '天气：'+weather;
+
+		var time = data.result.today.date_y;
+		$('li')[2].innerHTML = '时间：'+time;
+	});
+}
+
+	$('#submit').click(search);
+});
+</script>
+
+<style type="text/css">
+
+#search,#list{
+	margin-top: 40px;
+	text-align: center;
+}
+
+#list{
+	margin-left: 20%;
+	margin-right: 20%;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div>
+<div class='main'>
+<div>
+	<h1 class='text-primary text-center'><img style="margin-right: 20px" src='../static/img/cloud.png'/>Weather</h1>
+</div>
+
+<div id='search'>
+	<div>
+		<input id='city' placeholder='请输入城市名：' type='text'/>
+		<input id='submit' type='submit' value="获取" />
+	</div>
+</div>
+
+<div id='list' class='list-style'>
+	<ul class='list-group'>
+		<li class='list-group-item'>温度</li>
+		<li class='list-group-item'>天气</li>
+		<li class='list-group-item'>时间</li>
+	</ul>
+
+</div>
+
+</div>
+</div>
+</body>
+</html>

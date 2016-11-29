@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Sign up</title>
+
+    <script type='text/javascript' src="../static/js/jquery-3.1.1.js"></script>
+    <script type='text/javascript' src="../static/js/bootstrap.js"></script>
+    <link type="text/css" href="../static/css/bootstrap.css" rel="stylesheet"/>
+
+      <script>
+          function onload() {
+          }
+
+          function tologin(){
+              var textlogin = document.getElementById('textlogin');
+              document.getElementById('email').style.display = 'none';
+              textlogin.style.display = 'none';
+              document.getElementById('btn').setAttribute('onclick','login()');
+              document.getElementById('prompt').innerHTML = 'Please sign in';
+          }
+
+          function login(){
+              var u = document.getElementById('username').value;
+              var p = document.getElementById('password').value;
+
+              $.ajax({
+                type: "post",
+                url: 'http://rome753.cc/login',
+                async: true, // 使用同步方式
+                // 1 需要使用JSON.stringify 否则格式为 a=2&b=3&now=14...
+                // 2 需要强制类型转换，否则格式为 {"a":"2","b":"3"}
+                data: JSON.stringify({
+                    username: u,
+                    password: p
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    setCookie("fsname", u);
+                    window.location.href = 'http://rome753.cc/chatroom';
+                }
+             });
+          }
+
+          function register() {
+              var e = document.getElementById('email').value;
+              var u = document.getElementById('username').value;
+              var p = document.getElementById('password').value;
+
+              $.ajax({
+                type: "post",
+                url: 'http://rome753.cc/register',
+                async: true, // 使用同步方式
+                // 1 需要使用JSON.stringify 否则格式为 a=2&b=3&now=14...
+                // 2 需要强制类型转换，否则格式为 {"a":"2","b":"3"}
+                data: JSON.stringify({
+                    email: e,
+                    username: u,
+                    password: p
+                }),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    tologin();
+                }
+             });
+          }
+
+          function setCookie (name, value){
+                var expdate = new Date();   //初始化时间
+                expdate.setTime(expdate.getTime() + 30 * 24 * 3600);   //时间
+                document.cookie = name+"="+value+";expires="+expdate.toGMTString()+";path=/";
+          }
+
+         function getCookie(c_name){
+            if (document.cookie.length>0){
+              c_start=document.cookie.indexOf(c_name + "=")
+              if (c_start!=-1){
+                c_start=c_start + c_name.length+1
+                c_end=document.cookie.indexOf(";",c_start)
+                if (c_end==-1) c_end=document.cookie.length
+                return decodeURI(document.cookie.substring(c_start,c_end))
+              }
+            }
+            return ""
+         }
+
+      </script>
+  </head>
+
+  <body onload="onload();">
+
+    <div class="container">
+        <h2 id="prompt" class="form-signin-heading">Please sign up</h2>
+        <input id='email' type="email" class="form-control" placeholder="Email address" required autofocus>
+        <input id="username" class="form-control" placeholder="Username" required>
+        <input id="password" type="password" class="form-control" placeholder="Password" required>
+        <button id="btn" class="btn btn-lg btn-primary btn-block" type="submit" onclick="register()">Sign up</button>
+        <div id="textlogin" onclick="tologin()"><a style="cursor: pointer;">to login</a></div>
+    </div>
+
+  </body>
+</html>

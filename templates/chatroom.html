@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html >
+<head>
+    <title>Chat Room</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+    <style type="text/css">
+      html,body{
+         width: 100%;
+         height: 100%;
+         margin: 0;
+      }
+      .wrap{
+            width: 100%;
+            height: 100%;
+            display: table;
+            background-color: #ccc;
+      }
+      .wrap_m {
+        display: table-row;
+      }
+      .wrap_1 {
+        height: 50px;
+        display: table-row;
+      }
+      
+      .bar{
+        display: table;
+        width: 100%;
+      }
+      .bar_m {
+        display: table-cell;
+        height: 50px;
+        margin-right: 50px;
+      }
+      .bar_1 {
+        display: table-cell;
+        width: 100px;
+        height: 50px;
+      }
+
+      #room {
+        width: 100%;
+        height: 100%;
+        color: red;
+        overflow-y: auto;
+      }
+    </style>
+
+    <script type="text/javascript">
+      var ws;
+      var room;
+      var text;
+
+      function Msg(){
+        this.type = 0;
+        this.to = "";
+        this.msg = "";
+      }
+
+      function onload(){
+        ws = new WebSocket("ws://www.rome753.cc/chat");
+        room = document.getElementById('room');
+        text = document.getElementById('text');
+        ws.onmessage = function(e){
+          console.log(e.data);
+          var o = JSON.parse(e.data);
+          room.innerHTML = room.innerHTML + '<span>' + o.from + '说:' + o.msg + '</span><br/>';
+          room.scrollTop = room.scrollHeight;
+        };
+
+        ws.onopen = function(e){
+          var fsname = getCookie('fsname');
+          var fsid = getCookie('fsid');
+          var msg = new Msg();
+          msg.msg = fsid + fsname;
+          ws.send(JSON.stringify(msg));
+        };
+
+        ws.onerror = function(e){
+          console.log(e.data);
+        };
+
+        ws.onclose = function(e){
+          console.log(e.data);
+        }
+      }
+
+      function sendMsg(){
+        var msg = new Msg();
+        msg.type = 1;
+        msg.msg = text.value;
+        ws.send(JSON.stringify(msg));
+        text.value = "";
+      }
+
+      function getCookie(c_name){
+        if (document.cookie.length>0){
+          c_start=document.cookie.indexOf(c_name + "=")
+          if (c_start!=-1){
+            c_start=c_start + c_name.length+1
+            c_end=document.cookie.indexOf(";",c_start)
+            if (c_end==-1) c_end=document.cookie.length
+            return decodeURI(document.cookie.substring(c_start,c_end))
+          }
+        }
+        return ""
+      }
+    </script>
+</head>
+<body onload="onload();">
+    <div class="wrap">
+      <div class="wrap_m">
+        <div id='room'>
+          
+        </div>
+      </div>
+      <div class="wrap_1">
+        <div class="bar">
+          <div class="bar_m">
+            <input type="text" id='text' name="msg" placeholder="please input msg:" style='width: 100%; height: 100%' onkeypress="if(event.keyCode==13) {sendMsg();}"/>
+          </div>
+          <div class="bar_1">
+            <input type="button" id='btn' name="btn" onclick="sendMsg();" style='width: 100%; height: 100%' value='send'/>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+</body>
+</html> 
