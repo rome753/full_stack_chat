@@ -19,7 +19,6 @@ import logging
 # emails and verify codes
 emails_codes = {}
 
-id = u'fsid'
 name = u'username'
 word = u'password'
 mail = u'email'
@@ -75,11 +74,13 @@ class LoginHandler(BaseHandler):
     def post(self):
         user = json.loads(self.request.body.decode('utf-8'))
 
-        logging.debug(self.get_cookie(id))
+        logging.debug(self.get_cookie('fsid'))
         if Mgdb().is_exists(user):
             logging.debug('login success')
-            fsid = Mgdb().get_fsid(user[name])
-            self.set_cookie(id, fsid, gvars.domain, expires_days=30)
+            fsname = user[name]
+            fsid = Mgdb().get_fsid(fsname)
+            self.set_cookie('fsid', fsid, gvars.domain, expires_days=30)
+            self.set_cookie('fsname', fsname, gvars.domain, expires_days=30)
 
             self.write({"error_code": 200, "reason": "登录成功"})
         else:
