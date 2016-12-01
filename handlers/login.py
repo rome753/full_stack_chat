@@ -39,6 +39,9 @@ class VerifyCodeHandler(BaseHandler):
 
 
 class RegisterHandler(BaseHandler):
+    '''
+    注册
+    '''
 
     def post(self):
         register = json.loads(self.request.body.decode('utf-8'))
@@ -70,6 +73,9 @@ def check_register(r):
 
 
 class LoginHandler(BaseHandler):
+    '''
+    登录
+    '''
 
     def post(self):
         user = json.loads(self.request.body.decode('utf-8'))
@@ -86,6 +92,17 @@ class LoginHandler(BaseHandler):
         else:
             logging.debug('login fail')
             self.write({"error_code": 3, "reason": "login fail"})
+
+
+class LogoutHandler(BaseHandler):
+    '''
+    退出登录
+    '''
+
+    def get(self):
+        self.write({"error_code": 200, "reason": "退出登录成功"})
+        if self.name:
+            logging.warn('logout: '+self.name)
 
 
 if __name__ == "__main__":

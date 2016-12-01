@@ -9,9 +9,7 @@ from tornado.ioloop import IOLoop
 from tornado.web import RequestHandler
 
 import gvars
-from handlers.chat import ChatHandler
-from handlers.login import VerifyCodeHandler, RegisterHandler, LoginHandler
-
+from handlers import handlers
 
 class MainHandler(RequestHandler):
     def get(self):
@@ -35,25 +33,23 @@ settings = {
     "static_path": os.path.join(os.path.dirname(__file__), "static")
 }
 
-application = tornado.web.Application(
-    [
+HANDLERS = [
         (r"/", MainHandler),
-        (r"/chat", ChatHandler),
         (r"/chatroom", ChatroomHandler),
         (r"/weather", WeatherHandler),
-        (r"/verify_code", VerifyCodeHandler),
-        (r"/register", RegisterHandler),
-        (r"/login", LoginHandler)
-    ], **settings
-)
+]
 
 if __name__ == "__main__":
     # run on local
     port = 8000
-    gvars.domain = '192.168.31.247'
+    # gvars.domain = '192.168.31.247'
+    gvars.domain = '192.168.1.28'
     # run on server
     if len(sys.argv) == 2:
         port = sys.argv[1]
         gvars.domain = 'rome753.cc'
+
+    HANDLERS += handlers
+    application = tornado.web.Application(HANDLERS, **settings)
     application.listen(port)
     IOLoop.instance().start()

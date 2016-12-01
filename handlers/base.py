@@ -1,9 +1,15 @@
+import logging
 import traceback
 from tornado.web import RequestHandler
 from tornado.websocket import WebSocketHandler
 
 
 class BaseHandler(RequestHandler):
+
+    def __init__(self, application, request, **kwargs):
+        super(BaseHandler, self).__init__(application, request, **kwargs)
+        self.fsid = self.get_cookie('fsid')
+        self.name = self.get_cookie('fsname')
 
     def write_error(self, status_code, **kwargs):
         """Override to implement custom error pages.
@@ -30,11 +36,6 @@ class BaseHandler(RequestHandler):
 class BaseWebSocketHandler(WebSocketHandler):
 
     def __init__(self, application, request, **kwargs):
-        super(WebSocketHandler, self).__init__(application, request, **kwargs)
+        super(BaseWebSocketHandler, self).__init__(application, request, **kwargs)
         self.fsid = ""
         self.name = ""
-        self.ws_connection = None
-        self.close_code = None
-        self.close_reason = None
-        self.stream = None
-        self._on_close_called = False

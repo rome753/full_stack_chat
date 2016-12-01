@@ -41,7 +41,6 @@ class Mgdb:
 
 if __name__ == '__main__':
     db = Mgdb()
-    user = {"username":"chris", "email": "tet@gmail.com"}
+    user = {"username":"chris"}
     cursor =  db.logins.find({})
-    for u in cursor:
-        logging.debug(u['fsid'])
+    logging.warn('loggin')
