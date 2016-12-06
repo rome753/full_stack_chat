@@ -44,13 +44,13 @@ if __name__ == "__main__":
     port = 8000
     # gvars.domain = '192.168.31.247'
     gvars.domain = '192.168.1.28'
-    gvars.image_dir = './upload/image'
+    gvars.image_dir = './static/upload/image'
     # run on server
     if len(sys.argv) == 2:
         port = sys.argv[1]
         gvars.domain = 'rome753.cc'
         # 服务器上用Supervisor运行时, 使用绝对路径
-        gvars.image_dir = '/root/full_stack/upload/image'
+        gvars.image_dir = '/root/full_stack/static/upload/image'
 
     HANDLERS += handlers
     application = tornado.web.Application(HANDLERS, **settings)
