@@ -7,6 +7,7 @@ import logging
 import os
 import uuid
 
+import gvars
 from handlers.base import BaseHandler
 from mgdb import Mgdb
 
@@ -22,14 +23,22 @@ class AvatarHandler(BaseHandler):
             avatar = files[0]
             ext = os.path.splitext(avatar['filename'])[1]
             name = str(time.time())
-            file = './upload/image/' + name + ext
+            avatar_file = get_image_file(name + ext)
 
-            with open(file, 'wb') as f:
+            with open(avatar_file, 'wb') as f:
                 f.write(avatar['body'])
+                logging.warn('upload: ' + avatar_file)
                 self.write({"error_code": 200, "reason": "上传成功"})
 
 
+def get_image_file(filename):
+    image_file = os.path.join(gvars.image_dir, filename)
+    return image_file
+
+
 if __name__ == '__main__':
+
     u1 = uuid.uuid1()
     u4 = uuid.uuid4()
     a =  time.time()
+    print __file__
