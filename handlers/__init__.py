@@ -18,5 +18,6 @@ handlers += [
 
 import user
 handlers += [
-    (r"/avatar", user.AvatarHandler),
+    (r"/user", user.UserHandler),
+    (r"/avatar", user.AvatarHandler)
 ]

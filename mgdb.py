@@ -2,6 +2,9 @@ import uuid
 
 import pymongo
 import logging
+import time
+import os
+import gvars
 
 
 class Mgdb:
@@ -13,6 +16,7 @@ class Mgdb:
         self.db = client.test
         # collection login
         self.logins = self.db.login
+        self.users = self.db.user
 
     def find_email(self, email):
         cursor = self.logins.find(email)
@@ -20,27 +24,46 @@ class Mgdb:
             return False
         return True
 
-    def is_exists(self, user):
-        cursor = self.logins.find(user)
-        if cursor.count() == 0:
-            return False
-        return True
+    def find_login(self, user):
+        return self.logins.find_one(user)
 
-    def add_register(self, user):
-        if (self.is_exists({'username': user['username']}) or
-                self.is_exists({'email': user['email']})) is not True:
-            user['fsid'] = uuid.uuid1().hex
-            self.logins.insert(user)
-            return True
+    def find_user(self, user):
+        return self.users.find_one(user)
+
+    def add_login(self, user):
+        if self.find_login({'username': user['username']}) is None:
+            if self.find_login({'email': user['email']}) is None:
+                user['fsid'] = uuid.uuid1().hex
+                # add to db.login
+                self.logins.insert(user)
+
+                # add to db.user
+                r_time = time.strftime('%y-%m-%d', time.localtime(time.time()))
+                self.users.insert({'name': user['username'], 'register_time': r_time})
+                return True
 
     def get_fsid(self, name):
-        cursor = self.logins.find({"username": name})
-        if cursor.count() == 1:
-            for u in cursor:
-                return u['fsid']
+        one = self.find_login({"username": name})
+        if one:
+            return one['fsid']
+
+    def update_avatar(self, name, avatar):
+        result = self.users.find_one({'name': name})
+        if 'avatar' in result:
+            old_avatar = os.path.join(gvars.image_dir, result['avatar'])
+            if os.path.exists(old_avatar): # remove old image
+                os.remove(old_avatar)
+        self.users.update({'name': name}, {'$set': {'avatar': avatar}})
+
+    def update_user(self, name, user):
+        result = self.users.update({'name': name}, {'$set': user})
+        if result['nModified'] > 0:
+            return True
+        return False
+
 
 if __name__ == '__main__':
-    db = Mgdb()
-    user = {"username":"chris"}
-    cursor =  db.logins.find({})
-    logging.warn('loggin')
+    name = 'chris'
+    user = {'avatar':'xxxx'}
+    r = Mgdb().find_user({'name': '1'})
+    print gvars.domain+":"+str(gvars.port)+"/static/upload/image/"+r['avatar']

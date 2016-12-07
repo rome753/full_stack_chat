@@ -44,16 +44,14 @@ class RegisterHandler(BaseHandler):
     '''
 
     def post(self):
-        register = json.loads(self.request.body.decode('utf-8'))
-
-        if check_register(register) is True:
-            if Mgdb().add_register(register) is True:
-                self.write({"error_code": 200, "reason": "注册成功"})
+        if check_register(self.jsonbody) is True:
+            if Mgdb().add_login(self.jsonbody) is True:
+                self.write_base("注册成功")
             else:
-                self.write({"error_code": 200, "reason": "用户名或邮箱已存在"})
+                self.write_base("用户名或邮箱已存在")
 
         else:
-            self.write({"error_code": 200, "reason": "信息填写有误"})
+            self.write_base("信息填写有误")
 
         # if register['verify_code'] == emails_codes[register['email']]:
         #     pass
@@ -78,20 +76,18 @@ class LoginHandler(BaseHandler):
     '''
 
     def post(self):
-        user = json.loads(self.request.body.decode('utf-8'))
-
-        logging.debug(self.get_cookie('fsid'))
-        if Mgdb().is_exists(user):
-            logging.debug('login success')
-            fsname = user[name]
+        logging.debug(self.fsid)
+        if Mgdb().find_login(self.jsonbody):
+            logging.debug('登录成功')
+            fsname = self.jsonbody[name]
             fsid = Mgdb().get_fsid(fsname)
             self.set_cookie('fsid', fsid, gvars.domain, expires_days=30)
             self.set_cookie('fsname', fsname, gvars.domain, expires_days=30)
 
-            self.write({"error_code": 200, "reason": "登录成功"})
+            self.write_base("登录成功")
         else:
-            logging.debug('login fail')
-            self.write({"error_code": 3, "reason": "login fail"})
+            logging.debug('登录失败')
+            self.write_base("登录失败")
 
 
 class LogoutHandler(BaseHandler):
@@ -100,7 +96,7 @@ class LogoutHandler(BaseHandler):
     '''
 
     def get(self):
-        self.write({"error_code": 200, "reason": "退出登录成功"})
+        self.write_base("退出登录成功")
         if self.name:
             logging.warn('logout: '+self.name)
 
@@ -109,4 +105,4 @@ if __name__ == "__main__":
     # run on local
     pass
     r = {u'username': u'\u8d85\u54e5', u'password': u'chao'}
-    logging.debug(Mgdb().is_exists(r))
+    logging.debug(Mgdb().find_login(r))

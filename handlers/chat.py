@@ -17,8 +17,7 @@ class ChatHandler(BaseWebSocketHandler):
         return True
 
     def open(self, *args, **kwargs):
-        logging.debug(self.get_cookie('fsid'))
-        send_msg2all(self, u'来了')
+        pass
 
     def on_close(self):
         if self in online_users:
@@ -29,18 +28,21 @@ class ChatHandler(BaseWebSocketHandler):
         msg = json.loads(message)
 
         if msg.has_key('type') and msg.has_key('to') and msg.has_key('msg'):
+            # 验证发送过来的cookie
             if msg['type'] == 0:
                 fsid = msg['msg'][:32]
                 name = msg['msg'][32:]
                 logging.debug(fsid + ":" + name)
-                if Mgdb().is_exists({'fsid': fsid, 'username': name}):
+                if Mgdb().find_login({'fsid': fsid, 'username': name}):
                     self.fsid = fsid
                     self.name = name
                     if self not in online_users:
                         online_users.append(self)
+                        send_msg2all(self, u'来了')
             elif self in online_users:
                 if msg['type'] == 1:
                     send_msg2all(self, msg['msg'])
+
 
 def send_msg2all(handler, msg):
     send = {}
