@@ -28,15 +28,16 @@ class BaseHandler(RequestHandler):
         else:
             self.finish('{code: ' + str(status_code) + ', message: ' + self._reason + '}')
 
-    def write_base(self, reason='OK', error_code=200):
-        self.write_dict({'reason': reason})
+    # error_code: 200 只返回reason
+    def write_base(self, reason='OK'):
+        self.write({'reason': reason, 'error_code': 200})
 
+    # error_code: 201 返回字典(json字符串)
     def write_dict(self, d):
         if '_id' in d:
             d.pop('_id')
-        d['error_code'] = 200
-        if 'reason' not in d:
-            d['reason'] = 'OK'
+        d['error_code'] = 201
+        d['reason'] = 'OK'
         self.write(d)
 
 

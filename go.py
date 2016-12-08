@@ -52,7 +52,7 @@ if __name__ == "__main__":
         # 服务器上用Supervisor运行时, 使用绝对路径
         gvars.image_dir = '/root/full_stack/static/upload/image'
 
-    gvars.image_url = gvars.domain+":"+str(gvars.port)+"/static/upload/image/"
+    gvars.image_url = "http://" + gvars.domain + ":" + str(gvars.port)+"/static/upload/image/"
 
     HANDLERS += handlers
     application = tornado.web.Application(HANDLERS, **settings)
