@@ -12,7 +12,10 @@ class BaseHandler(RequestHandler):
         super(BaseHandler, self).__init__(application, request, **kwargs)
         self.fsid = self.get_cookie('fsid')
         self.name = self.get_cookie('fsname')
-        if self.request.body:
+
+        # 判断是否post json数据, 是就直接解析
+        headers = self.request.headers
+        if 'Content-Type' in headers and 'json' in headers['Content-Type']:
             self.jsonbody = json.loads(self.request.body.decode('utf-8'))
 
     def write_error(self, status_code, **kwargs):
@@ -73,5 +76,3 @@ class User(BaseResponse):
 if __name__ == "__main__":
     import json
     j = '{"age": 23, "name": "\u6253\u53d1\u65af\u8482\u82ac"}'
-    d = json.loads(j)
-    print d['name']
