@@ -46,12 +46,12 @@ class RegisterHandler(BaseHandler):
     def post(self):
         if check_register(self.jsonbody) is True:
             if Mgdb().add_login(self.jsonbody) is True:
-                self.write_base("注册成功")
+                self.write_ok("注册成功")
             else:
-                self.write_base("用户名或邮箱已存在")
+                self.write_failure("用户名或邮箱已存在")
 
         else:
-            self.write_base("信息填写有误")
+            self.write_failure("信息填写有误")
 
         # if register['verify_code'] == emails_codes[register['email']]:
         #     pass
@@ -84,10 +84,10 @@ class LoginHandler(BaseHandler):
             self.set_cookie('fsid', fsid, gvars.domain, expires_days=30)
             self.set_cookie('fsname', fsname, gvars.domain, expires_days=30)
 
-            self.write_base("登录成功")
+            self.write_ok("登录成功")
         else:
             logging.debug('登录失败')
-            self.write_base("登录失败")
+            self.write_failure("登录失败")
 
 
 class LogoutHandler(BaseHandler):
@@ -96,7 +96,7 @@ class LogoutHandler(BaseHandler):
     '''
 
     def get(self):
-        self.write_base("退出登录成功")
+        self.write_ok("退出登录成功")
         if self.name:
             logging.warn('logout: '+self.name)
 

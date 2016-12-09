@@ -24,13 +24,13 @@ class UserHandler(BaseHandler):
                 user['avatar'] = gvars.image_url + user['avatar']
             self.write_dict(user)
         else:
-            self.write_base('用户不存在')
+            self.write_failure('用户不存在')
 
     def post(self):
         if Mgdb().update_user(self.name, self.jsonbody):
-            self.write_base('更新成功')
+            self.write_ok('更新成功')
         else:
-            self.write_base('更新失败')
+            self.write_failure('更新失败')
 
 
 class AvatarHandler(BaseHandler):
@@ -48,7 +48,7 @@ class AvatarHandler(BaseHandler):
                 logging.warn('upload: ' + avatar_file)
 
                 Mgdb().update_avatar(self.name, filename)
-                self.write_base("上传成功")
+                self.write_ok("上传成功")
 
 
 def get_image_file(filename):

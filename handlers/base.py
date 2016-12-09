@@ -29,8 +29,12 @@ class BaseHandler(RequestHandler):
             self.finish('{code: ' + str(status_code) + ', message: ' + self._reason + '}')
 
     # error_code: 200 只返回reason
-    def write_base(self, reason='OK'):
+    def write_ok(self, reason='OK'):
         self.write({'reason': reason, 'error_code': 200})
+
+    # error_code: 199 只返回reason
+    def write_failure(self, reason='failure'):
+        self.write({'reason': reason, 'error_code': 199})
 
     # error_code: 201 返回字典(json字符串)
     def write_dict(self, d):

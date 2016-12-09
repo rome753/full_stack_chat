@@ -49,7 +49,7 @@ def send_msg2all(handler, msg):
     send['type'] = 0
     send['from'] = handler.name
     send['msg'] = msg
-    send['time'] = time.strftime('(%H:%M:%S): ', time.localtime(time.time()))
+    send['time'] = time.strftime('%H:%M:%S', time.localtime(time.time()))
     logging.debug(send)
     for user in online_users:
         user.write_message(json.dumps(send))
