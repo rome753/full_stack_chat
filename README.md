@@ -20,16 +20,44 @@
 - ~~即时聊天~~ 
 > 使用tornado中的websocket长连接实现。已连接上的用户自动保存到内存集合中，连接断开则移除。由于websocket是tcp层，不能直接使用http层的header发送cookie，连接上后客户端在message中主动发送一次cookie信息。聊天室通过遍历用户集合并发送消息实现，单对单聊天通过cookie中记录的用户信息实现。
 
+
 - 邮箱验证码
 - **聊天记录管理**
 - **发送图片**
 - 重复登录检测
 - 第三方登录对接
 
+
+## 数据库 MongoDB
+### db test
+db.login
+```
+{
+    username;
+    password;
+    fsid;
+    email;
+}
+```
+
+db.user
+```
+{
+    name;
+    avatar;
+    age; // int
+    quote;
+    city;
+    register_time;
+}
+```
+
 ## 接口
 - [register](#register)
 - [login](#login)
 - [chat](#chat)
+- [avatar](#avatar)
+- [user](#user)
 
 #### "register" <span id='register' />
 ```
@@ -62,4 +90,37 @@ receive: {// 接收的消息格式
 	to,
 	msg
 }
+```
+
+#### "avatar" <span id='avatar' />
+```js
+post: {//okhttp上传图片文件
+    RequestBody fileBody = MultipartBody.create(MediaType.parse("application/octet-stream"), file);
+    RequestBody body = new MultipartBody.Builder()
+            .setType(MultipartBody.FORM)
+            .addFormDataPart("file", file.getName(), fileBody)
+            .build();
+}
+```
+
+#### "user" <span id='user' />
+```js
+get: {
+    name
+}
+{
+    name;
+    avatar;
+    age; // int
+    quote;
+    city;
+    register_time;
+}
+
+post: {
+    age;
+    city;
+    quote
+}
+
 ```
