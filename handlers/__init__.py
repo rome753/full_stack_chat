@@ -13,6 +13,7 @@ handlers += [
 import chat
 handlers += [
     (r"/chat", chat.ChatHandler),
+    (r"/online_users", chat.OnlineUsersHandler)
 ]
 
 
