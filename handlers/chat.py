@@ -25,8 +25,8 @@ class ChatHandler(BaseWebSocketHandler):
 
     def on_close(self):
         logging.warn('on_close')
-        if self.name in online_users:
-            online_users.pop(self.name)
+        if self.fsid in online_users:
+            online_users.pop(self.fsid)
         send_msg2all(self.name, u'走了')
         send_leaves(self.name)
 
@@ -42,11 +42,11 @@ class ChatHandler(BaseWebSocketHandler):
                     self.fsid = fsid
                     self.name = name
                     send_msg2all(self.name, u'来了')
-                    if name in online_users.keys():
-                        online_users.pop(name)
+                    if fsid in online_users.keys():
+                        online_users.pop(fsid)
                     send_comes(name)
-                    online_users[name] = self
-            elif self.name in online_users:
+                    online_users[fsid] = self
+            elif self.fsid in online_users:
                 if msg['type'] == 1:# all
                     send_msg2all(self.name, msg['msg'])
                 elif msg['type'] == 2: # name
@@ -70,13 +70,16 @@ def send_msg2name(from_name, to_name, msg):
     send = {'type': 1, 'from': from_name, 'msg': msg,
             'time': time.strftime('%H:%M:%S', time.localtime(time.time()))}
 
-    if from_name in online_users:
-        from_handler = online_users[from_name]
+    from_fsid = Mgdb().get_fsid(from_name)
+    to_fsid = Mgdb().get_fsid(to_name)
+
+    if from_fsid in online_users:
+        from_handler = online_users[from_fsid]
         if from_handler:
             from_handler.write_message(json.dumps(send))
 
-    if to_name in online_users:
-        to_handler = online_users[to_name]
+    if to_fsid in online_users:
+        to_handler = online_users[to_fsid]
         if to_handler:
             to_handler.write_message(json.dumps(send))
 
@@ -97,9 +100,10 @@ def send_leaves(name):
 
 class OnlineUsersHandler(BaseHandler):
     def get(self):
-        names = online_users.keys()
-        if self.name in names:
-            names.remove(self.name)
+        names = []
+        for handler in online_users.values():
+            if handler.fsid != self.fsid:
+                names.append(handler.name)
         d = {'online_users': names}
         self.write_dict(d)
 
@@ -107,6 +111,4 @@ class OnlineUsersHandler(BaseHandler):
 if __name__ == '__main__':
     d = {"a": 1, "b": 2}
     k = d.keys()
-    k.remove("c")
-    print k
-    print d.keys()
+    print None in d

@@ -42,8 +42,8 @@ HANDLERS = [
 if __name__ == "__main__":
     # run on local
     gvars.port = 8000
-    gvars.domain = '192.168.31.247'
-    # gvars.domain = '192.168.1.28'
+    # gvars.domain = '192.168.31.247'
+    gvars.domain = '192.168.1.75'
     gvars.image_dir = './static/upload/image'
     # run on server
     if len(sys.argv) == 2:
