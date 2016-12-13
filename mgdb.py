@@ -47,6 +47,11 @@ class Mgdb:
         if one:
             return one['fsid']
 
+    def get_avatar(self, name):
+        one = self.find_user({"name": name})
+        if one and 'avatar' in one:
+            return gvars.image_url + one['avatar']
+
     def update_avatar(self, name, avatar):
         result = self.users.find_one({'name': name})
         if 'avatar' in result:
@@ -65,5 +70,5 @@ class Mgdb:
 if __name__ == '__main__':
     name = 'chris'
     user = {'avatar':'xxxx'}
-    r = Mgdb().find_user({'name': '1'})
-    print gvars.domain+":"+str(gvars.port)+"/static/upload/image/"+r['avatar']
+    r = Mgdb().get_avatar('1')
+    print r

@@ -24,7 +24,7 @@ class ChatHandler(BaseWebSocketHandler):
         pass
 
     def on_close(self):
-        logging.warn('on_close')
+        logging.warn('on_close: '+self.name)
         if self.fsid in online_users:
             online_users.pop(self.fsid)
         send_msg2all(self.name, u'走了')
@@ -41,6 +41,7 @@ class ChatHandler(BaseWebSocketHandler):
                 if Mgdb().find_login({'fsid': fsid, 'username': name}):
                     self.fsid = fsid
                     self.name = name
+                    logging.warn('on_open: '+name)
                     send_msg2all(self.name, u'来了')
                     if fsid in online_users.keys():
                         online_users.pop(fsid)
@@ -85,9 +86,12 @@ def send_msg2name(from_name, to_name, msg):
 
 
 def send_comes(name):
+    avatar = Mgdb().get_avatar(name)
+    send = {'type': 2, 'from': name,
+            'time': time.strftime('%H:%M:%S', time.localtime(time.time()))}
+    if avatar:
+        send['msg'] = avatar
     for handler in online_users.values():
-        send = {'type': 2, 'from': name,
-                'time': time.strftime('%H:%M:%S', time.localtime(time.time()))}
         handler.write_message(json.dumps(send))
 
 
@@ -100,15 +104,20 @@ def send_leaves(name):
 
 class OnlineUsersHandler(BaseHandler):
     def get(self):
-        names = []
+        names_avatars = []
         for handler in online_users.values():
             if handler.fsid != self.fsid:
-                names.append(handler.name)
-        d = {'online_users': names}
+                name_avatar = {}
+                name_avatar['name'] = handler.name
+                avatar = Mgdb().get_avatar(handler.name)
+                if avatar:
+                    name_avatar['avatar'] = avatar
+                names_avatars.append(name_avatar)
+        d = {'online_users': names_avatars}
         self.write_dict(d)
 
 
 if __name__ == '__main__':
-    d = {"a": 1, "b": 2}
-    k = d.keys()
-    print None in d
+    c = None
+    d = {"a": 1, "b": c}
+    print d
