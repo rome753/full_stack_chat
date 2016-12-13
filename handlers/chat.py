@@ -24,11 +24,11 @@ class ChatHandler(BaseWebSocketHandler):
         pass
 
     def on_close(self):
-        logging.warn('on_close: '+self.name)
-        if self.fsid in online_users:
+        if self.fsid in online_users and self == online_users[self.fsid]:
+            logging.warn('on_close: '+ self.name)
             online_users.pop(self.fsid)
-        send_msg2all(self.name, u'走了')
-        send_leaves(self.name)
+            send_msg2all(self.name, u'走了')
+            send_leaves(self.name)
 
     def on_message(self, message):
         msg = json.loads(message)
@@ -41,8 +41,9 @@ class ChatHandler(BaseWebSocketHandler):
                 if Mgdb().find_login({'fsid': fsid, 'username': name}):
                     self.fsid = fsid
                     self.name = name
-                    logging.warn('on_open: '+name)
+                    logging.warn('on_open: '+ str(id(self)))
                     send_msg2all(self.name, u'来了')
+                    # 移除同一用户旧的handler
                     if fsid in online_users.keys():
                         online_users.pop(fsid)
                     send_comes(name)
