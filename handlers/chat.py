@@ -62,15 +62,19 @@ class ChatHandler(BaseWebSocketHandler):
 # 发送聊天室消息
 def send_msg2all(from_name, msg):
     send = {'type': 0, 'from': from_name, 'msg': msg,
-            'time': time.strftime('%H:%M:%S', time.localtime(time.time()))}
+            'time': get_time()}
     for handler in online_users.values():
         handler.write_message(json.dumps(send))
 
 
 # 发送消息给某人
 def send_msg2name(from_name, to_name, msg):
-    send = {'type': 1, 'from': from_name, 'msg': msg,
-            'time': time.strftime('%H:%M:%S', time.localtime(time.time()))}
+    """
+    A发送给B一条消息, 系统要给A和B各发一条
+    A收到{type: -1, from: B}
+    B收到{type: 1, from: A}
+    """
+    send = {'msg': msg, 'time': get_time()}
 
     from_fsid = Mgdb().get_fsid(from_name)
     to_fsid = Mgdb().get_fsid(to_name)
@@ -78,18 +82,22 @@ def send_msg2name(from_name, to_name, msg):
     if from_fsid in online_users:
         from_handler = online_users[from_fsid]
         if from_handler:
+            send['type'] = -1
+            send['from'] = to_name
             from_handler.write_message(json.dumps(send))
 
     if to_fsid in online_users:
         to_handler = online_users[to_fsid]
         if to_handler:
+            send['type'] = 1
+            send['from'] = from_name
             to_handler.write_message(json.dumps(send))
 
 
 def send_comes(name):
     avatar = Mgdb().get_avatar(name)
     send = {'type': 2, 'from': name,
-            'time': time.strftime('%H:%M:%S', time.localtime(time.time()))}
+            'time': get_time()}
     if avatar:
         send['msg'] = avatar
     for handler in online_users.values():
@@ -99,8 +107,12 @@ def send_comes(name):
 def send_leaves(name):
     for handler in online_users.values():
         send = {'type': 3, 'from': name,
-                'time': time.strftime('%H:%M:%S', time.localtime(time.time()))}
+                'time': get_time()}
         handler.write_message(json.dumps(send))
+
+
+def get_time():
+    return long(time.time())
 
 
 class OnlineUsersHandler(BaseHandler):
@@ -121,4 +133,4 @@ class OnlineUsersHandler(BaseHandler):
 if __name__ == '__main__':
     c = None
     d = {"a": 1, "b": c}
-    print d
+    print get_time()
