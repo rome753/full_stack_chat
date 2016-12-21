@@ -40,6 +40,8 @@ class BaseHandler(RequestHandler):
     def write_dict(self, d):
         if '_id' in d:
             d.pop('_id')
+        if 'fsid' in d:
+            d.pop('fsid')
         d['error_code'] = 201
         d['reason'] = 'OK'
         self.write(d)
@@ -51,6 +53,7 @@ class BaseWebSocketHandler(WebSocketHandler):
         super(BaseWebSocketHandler, self).__init__(application, request, **kwargs)
         self.fsid = ""
         self.name = ""
+        self.temp = None # 用户发送的文件,临时缓存
 
 
 def convert_to_builtin_type(obj):

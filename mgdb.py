@@ -8,6 +8,23 @@ import gvars
 
 
 class Mgdb:
+    '''
+    login: {
+        'username':
+        'password':
+        'email'
+        'fsid'
+        }
+
+    user: {
+        'name'
+        'fsid'
+        'avatar'
+        'age'
+        'city'
+        'quote'
+    }
+    '''
 
     def __init__(self):
         client = pymongo.MongoClient("localhost", 27017)
@@ -39,7 +56,7 @@ class Mgdb:
 
                 # add to db.user
                 r_time = time.strftime('%y-%m-%d', time.localtime(time.time()))
-                self.users.insert({'name': user['username'], 'register_time': r_time})
+                self.users.insert({'name': user['username'], 'fsid': user['fsid'], 'register_time': r_time})
                 return True
 
     def get_fsid(self, name):
@@ -53,9 +70,9 @@ class Mgdb:
             return gvars.image_url + one['avatar']
 
     def update_avatar(self, name, avatar):
-        result = self.users.find_one({'name': name})
-        if 'avatar' in result:
-            old_avatar = os.path.join(gvars.image_dir, result['avatar'])
+        user = self.users.find_one({'name': name})
+        if 'avatar' in user:
+            old_avatar = os.path.join(gvars.image_dir, user['avatar'])
             if os.path.exists(old_avatar): # remove old image
                 os.remove(old_avatar)
         self.users.update({'name': name}, {'$set': {'avatar': avatar}})

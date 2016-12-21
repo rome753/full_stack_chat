@@ -72,6 +72,7 @@
           var fsname = getCookie('fsname');
           var fsid = getCookie('fsid');
           var msg = new Msg();
+          msg.type = 99;
           msg.msg = fsid + fsname;
           ws.send(JSON.stringify(msg));
         };
@@ -87,7 +88,7 @@
 
       function sendMsg(){
         var msg = new Msg();
-        msg.type = 1;
+        msg.type = 0;
         msg.msg = text.value;
         ws.send(JSON.stringify(msg));
         text.value = "";

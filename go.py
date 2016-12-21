@@ -11,6 +11,7 @@ from tornado.web import RequestHandler
 import gvars
 from handlers import handlers
 
+
 class MainHandler(RequestHandler):
     def get(self):
         self.render("templates/index.html")
@@ -53,6 +54,9 @@ if __name__ == "__main__":
         gvars.image_dir = '/root/full_stack/static/upload/image'
 
     gvars.image_url = "http://" + gvars.domain + ":" + str(gvars.port)+"/static/upload/image/"
+
+    from handlers.chat import add_robot
+    add_robot()
 
     HANDLERS += handlers
     application = tornado.web.Application(HANDLERS, **settings)
