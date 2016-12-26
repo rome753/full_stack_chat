@@ -143,12 +143,18 @@ class OnlineUsersHandler(BaseHandler):
         names_avatars = []
         for fsid in online_users.keys():
             if fsid != self.fsid:
-                user = Mgdb().find_user({"fsid": fsid})
-                name = user['name']
-                if 'avatar' in user:
-                    avatar = gvars.image_url + user['avatar']
+                if fsid in ROBOTS:
+                    name = fsid
+                    avatar = Mgdb().get_avatar(name)
+                    if not avatar:
+                        avatar = ''
                 else:
-                    avatar = ''
+                    user = Mgdb().find_user({"fsid": fsid})
+                    name = user['name']
+                    if 'avatar' in user:
+                        avatar = gvars.image_url + user['avatar']
+                    else:
+                        avatar = ''
                 names_avatars.append({'name': name, 'avatar': avatar})
         d = {'online_users': names_avatars}
         self.write_dict(d)
